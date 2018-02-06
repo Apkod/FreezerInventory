@@ -1,0 +1,11 @@
+<!-- BBD Best Before Date -->
+<p class="form-group" ng-class="{ 'has-error' : additemForm.additem.bbd.$invalid && !additemForm.additem.bbd.$pristine }">
+  <label>Best before date <small>( if exists, else leave blank )</small></label>
+  <p class="input-group">
+    <input type="text" readonly name="bbd" id="bbd" class="form-control" uib-datepicker-popup="{{format}}" ng-model="model" is-open="status.opened" min-date="minDate" ng-required="false" close-text="Close" alt-input-formats="modalOptions.altInputFormats"/>
+      <span class="input-group-btn">
+        <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+     </span>
+    <p ng-show="additemForm.additem.bbd.$invalid && !additemForm.additem.bbd.$pristine" class="help-block">A valid Best-before-date is required.</p>
+  </p>
+</p>

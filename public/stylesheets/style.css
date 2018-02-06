@@ -1,0 +1,15 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.yellowstyle {background-color: yellow;}
+.lightbluestyle {background-color: lightblue;}
+
+.row.extra-bottom-padding{
+   margin-bottom: 100px;
+}
