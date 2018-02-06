@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html ng-app="freezerinventoryApp">
+  <head>
+    <title>Freezer inventory</title>
+      <!-- CSS -->
+      <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootswatch/3.2.0/sandstone/bootstrap.min.css">
+      <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+      <style>
+        .row.row-grid [class*="col-"] + [class*="col-"] { margin-bottom: 15px; margin-top: 15px;}
+        .vertical-align-img{
+            height: 50px;
+            position: relative;
+        }
+
+        .vertical-align-img img{
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+      </style>
+
+      <!-- JS -->
+      <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js"></script>
+      <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-animate.js"></script>
+      <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-sanitize.js"></script>
+      <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-messages.js"></script>
+      <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.4.0.js"></script>
+      <script src="javascripts/app.js" type="text/javascript"></script>
+      <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body>
+      <div ng-controller="mainController">
+      <div class="container-fluid">
+        <div class="row row-grid">
+          <div class="col-lg-1 col-md-1 col-xs-1">
+            <div class="vertical-align-img">
+              <img src="/images/Snowflake.svg" />
+            </div>
+          </div>
+          <div class="col-sm-4 col-xs-6">
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="Filter" ng-model="search" id="srch">
+            </div>
+          </div>
+          <div class= "col-sm-offset-5 col-sm-1 col-xs-offset-2 col-xs-1">
+            <button class= "btn btn-info btn-md pull-right" ng-click="openAddItemDialog()">Add </button>
+          </div>
+        </div>
+      </div>
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-xs-12" id="mytable">
+            <table class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <td>
+                    <a href="#" ng-click="sortType = 'id'; sortReverse = !sortReverse">
+                      Id
+                      <span ng-show="sortType == 'id' && !sortReverse" class="fa fa-caret-down"></span>
+                      <span ng-show="sortType == 'id' && sortReverse" class="fa fa-caret-up"></span>
+                    </a>
+                  </td>
+                  <td>
+                    <a href="#" ng-click="sortType = 'type'; sortReverse = !sortReverse">
+                      Type
+                      <span ng-show="sortType == 'type' && !sortReverse" class="fa fa-caret-down"></span>
+                      <span ng-show="sortType == 'type' && sortReverse" class="fa fa-caret-up"></span>
+                    </a>
+                  </td>
+                  <td>
+                    <a href="#" ng-click="sortType = 'description'; sortReverse = !sortReverse">
+                      Description
+                      <span ng-show="sortType == 'description' && !sortReverse" class="fa fa-caret-down"></span>
+                      <span ng-show="sortType == 'description' && sortReverse" class="fa fa-caret-up"></span>
+                    </a>
+                  </td>
+                  <td>
+                    <a href="#" ng-click="sortType = 'entered'; sortReverse = !sortReverse">
+                      Entered
+                      <span ng-show="sortType == 'entered' && !sortReverse" class="fa fa-caret-down"></span>
+                      <span ng-show="sortType == 'entered' && sortReverse" class="fa fa-caret-up"></span>
+                    </a>
+                  </td>
+                  <td>
+                    <a href="#" ng-click="sortType = 'usebefore'; sortReverse = !sortReverse">
+                      Use before
+                      <span ng-show="sortType == 'usebefore' && !sortReverse" class="fa fa-caret-down"></span>
+                      <span ng-show="sortType == 'usebefore' && sortReverse" class="fa fa-caret-up"></span>
+                    </a>
+                  </td>
+                  <td>
+                     Action
+                  </td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="item in filtered = inventoryitems | filter:search | orderBy:sortType:sortReverse | startFrom:(currentPage-1)*entryLimit | limitTo:entryLimit">
+                  <td>{{ item.id }}</td>
+                  <td>{{ item.type }}</td>
+                  <td>{{ item.description }}</td>
+                  <td>{{ item.entered }}</td>
+                  <td > <span> {{item.usebefore}} </span>
+                    <span>      </span>
+                    <span ng-if="IsWarning(item.usebefore)">
+                      <span class="label label-warning">Use soon</span>
+                    </span>
+                    <span ng-if="IsDanger(item.usebefore)">
+                      <span class="label label-danger">Too old!</span>
+                    </span>
+                  </td>
+                  <td>
+                    <button class="btn btn-info btn-xs" ng-click="openDeleteItemDialog(item)"> Remove </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-xs-6" id="mybuttons">
+            <button class="btn btn-info btn-md" ng-disabled="currentPage == 1" ng-click="currentPage=currentPage-1">
+              <span class="glyphicon glyphicon-menu-left"></span></button>
+            {{currentPage}}/{{noOfPages}}
+            <button class="btn btn-info btn-md" ng-disabled="currentPage >= noOfPages" ng-click="currentPage=currentPage+1">
+              <span class="glyphicon glyphicon-menu-right"></span></button>
+          </div>
+          <div class="col-xs-6 text-right" id="mystatus">
+            <h4><small>Total no of items: {{inventoryitems.length}}</small></h4>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

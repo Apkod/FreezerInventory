@@ -1,0 +1,14 @@
+<div class="modal-header">
+  <h3>Check-out item {{$ctrl.item.id}}</h3>
+</div>
+<div class="modal-body">
+  <p>Type:        {{$ctrl.item.type}}</p>
+  <p>Description: {{$ctrl.item.description}}</p>
+  <p>Checked-in:  {{$ctrl.item.entered}}</p>
+  <p>Best-before: {{$ctrl.item.bbd}}</p>
+  <p>Use before:  {{$ctrl.item.usebefore}}</p>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn" data-ng-click="$ctrl.cancel()">Cancel</button>
+  <button class="btn btn-primary" data-ng-click="$ctrl.ok();">Check-out</button>
+</div>

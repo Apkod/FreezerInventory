@@ -1,0 +1,42 @@
+<div class="modal-header">
+  <h3>Check-in new item</h3>
+</div>
+<div class="modal-body">
+  <form name="additemForm" novalidate> <!-- novalidate prevents HTML5 validation since we will be validating ourselves -->
+    <!-- Type -->
+    <div class="form-group" ng-class="{ 'has-error' : additemForm.additem.type.$invalid && additemForm.additem.type.$touched }">
+      <label>Type</label>
+      <select name="type" class="form-control" ng-model="additem.type" required>
+        <option value="Fruits and berries">Fruits and berries</option>
+        <option value="Vegetables">Vegetables</option>
+        <option value="Mushroom">Mushroom</option>
+        <option value="Skinny meat">Skinny meat</option>
+        <option value="Fat meat">Fat meat</option>
+        <option value="Skinny fish">Skinny fish</option>
+        <option value="Fat fish">Fat fish</option>
+        <option value="Cooked fish">Cooked fish</option>
+        <option value="Bread">Bread</option>
+        <option value="Cookies and pastry">Cookies and pastry</option>
+      </select>
+      <div class="help-block" ng-messages="additemForm.additem.type.$error" ng-if="additemForm.additem.type.$touched">
+        <p ng-message="required">Type must be selected</p>
+      </div>
+    </div>
+    <!-- Description -->
+    <div class="form-group" ng-class="{ 'has-error' : additemForm.additem.description.$invalid && additemForm.additem.description.$touched }">
+      <label>Description</label>
+      <input type="text" name="description" class="form-control" ng-model="additem.description" ng-minlength="3" ng-maxlength="20" required >
+      <p ng-show="additemForm.additem.description.$error.minlength" class="help-block">Username is too short.</p>
+      <div class="help-block" ng-messages="additemForm.additem.description.$error" ng-if="additemForm.additem.description.$touched">
+        <p ng-message="minlength">Description is too short ( minimum 3 characters )</p>
+        <p ng-message="maxlength">Description is too long ( maximum 20 characters )</p>
+        <p ng-message="required">Description is required</p>
+      </div>
+    </div>
+    <div datepicker-directive ng-model="additem.bbd"></div>
+    <button type="button" class="btn" data-ng-click="cancel()">Cancel</button>
+    <button class="btn btn-primary" data-ng-click="ok();" ng-disabled="additemForm.$invalid">Check-in</button>
+  </form>
+</div>
+<div class="modal-footer">
+</div>
