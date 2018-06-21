@@ -46,7 +46,7 @@ router.get('/inventoryitems', function(req,res){
       var type = "meat";
       var description = "Meatballs 400g";
       var entered = new Date().toLocaleDateString();
-      console.log("entered is");
+      console.log("entered  is");
       console.log(entered);
 
       db.run("INSERT INTO ItemList VALUES (?,?,?,?,?,?)",id,type,description,entered,entered,entered );
