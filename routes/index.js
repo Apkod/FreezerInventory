@@ -4,6 +4,7 @@ var path = require('path');
 var fs = require("fs");
 var file = process.cwd() + "/" + "test.db";
 var sqlite3 = require("sqlite3").verbose();
+var exec = require('child_process').exec;
 
 function monthAdd(date, month) {
     var temp = date;
@@ -17,6 +18,18 @@ function monthAdd(date, month) {
     return temp;
 }
 
+function formatDateToString(date){
+   // 01, 02, 03, ... 29, 30, 31
+   var dd = (date.getDate() < 10 ? '0' : '') + date.getDate();
+   // 01, 02, 03, ... 10, 11, 12
+   var MM = ((date.getMonth() + 1) < 10 ? '0' : '') + (date.getMonth() + 1);
+   // 1970, 1971, ... 2015, 2016, ...
+   var yyyy = date.getFullYear();
+
+   // create the format you want
+   return (yyyy + "-" + MM + "-" + dd);
+}
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.sendFile(path.join(__dirname, '../', 'views', 'index.html'));
@@ -28,7 +41,7 @@ router.get('/inventoryitems', function(req,res){
   var createddb = false;
 
   if(!exists) {
-    console.log("Creating DB file.");
+    console.log("Creating DB file");
     fs.openSync(file, "w");
     createddb = true;
   }
@@ -45,8 +58,9 @@ router.get('/inventoryitems', function(req,res){
       var id = 1;
       var type = "meat";
       var description = "Meatballs 400g";
-      var entered = new Date().toLocaleDateString();
-      console.log("entered  is");
+      var adate = new Date();
+      var entered = formatDateToString(adate);
+      console.log("entered is");
       console.log(entered);
 
       db.run("INSERT INTO ItemList VALUES (?,?,?,?,?,?)",id,type,description,entered,entered,entered );
@@ -85,7 +99,8 @@ router.put('/inventoryitems', function(req,res){
     var db = new sqlite3.Database(file);
 
     // get current time --> entered
-    var entered = new Date().toLocaleDateString();
+    var adate = new Date();
+    var entered = formatDateToString(adate);
     var d = new Date();
 
     var usebefore;
@@ -94,7 +109,8 @@ router.put('/inventoryitems', function(req,res){
 
     // get the types use before time from database and relate to current date --> usebefore
     if((req.body.bbd !== undefined) && (req.body.bbd !== null)){
-      bbd = new Date(req.body.bbd).toLocaleDateString();
+      var bbddate = new Date(req.body.bbd);
+      bbd = formatDateToString(bbddate);
       usebefore = bbd;
     }
     else {
@@ -104,26 +120,29 @@ router.put('/inventoryitems', function(req,res){
         case "Mushroom":
         case "Bread":
         case "Skinny meat":
-          useaddmonths = monthAdd(d, 12)
-          usebefore = useaddmonths.toLocaleDateString();
+          useaddmonths = monthAdd(d, 12);
+          usebefore = formatDateToString(useaddmonths);
           break;
         case "Fat meat":
-          usebefore = d.monthAdd(d, 6).toLocaleDateString();
-          bbd = usebefore;
+          useaddmonths = monthAdd(d, 6);
+          usebefore = formatDateToString(useaddmonths);
           break;
         case "Skinny fish":
-          usebefore = d.monthAdd(d, 7).toLocaleDateString();
-          bbd = usebefore;
+          useaddmonths = monthAdd(d, 7);
+          usebefore = formatDateToString(useaddmonths);
           break;
         case "Fat fish":
         case "Cookies and pastry":
-          usebefore = d.monthAdd(d, 3).toLocaleDateString();
+          useaddmonths = monthAdd(d, 3);
+          usebefore = formatDateToString(useaddmonths);
           break;
         case "Cooked fish":
-          usebefore = d.monthAdd(d, 4).toLocaleDateString();
+          useaddmonths = monthAdd(d, 4);
+          usebefore = formatDateToString(useaddmonths);
           break;
         default:
-          usebefore = d.monthAdd(d, 3).toLocaleDateString();
+          useaddmonths = monthAdd(d, 3);
+          usebefore = formatDateToString(useaddmonths);
           break;
       }
       bbd = usebefore;
@@ -142,6 +161,11 @@ router.put('/inventoryitems', function(req,res){
 
         db.run("INSERT INTO ItemList VALUES (?,?,?,?,?,?)",addeditemscounter + 1,req.body.type,req.body.description,entered,bbd,usebefore );
 
+        // create the printfile we will a little later print a label from
+        var printfile = process.cwd() + "/" + "printfile.txt";
+        var printdata = "*	FreezerInventory\n" + "ID:     " + (addeditemscounter + 1) + "\n" + "Type:   " + req.body.type + "\n" + "Added:  " + entered + "\n" + "Desc.:  " + req.body.description + "\n" + "Best before:   " + usebefore;
+        fs.writeFileSync(printfile, printdata);
+
         db.run("UPDATE Settings SET addeditemscounter = ?", addeditemscounter + 1 );
 
         db.all("SELECT id,type,description,entered,bbd,usebefore FROM ItemList", function(err, rows) {
@@ -149,6 +173,15 @@ router.put('/inventoryitems', function(req,res){
             console.log(err)
           }
           else{
+            // print out the label from file printfile.txt in current folder
+            var commandstring = 'lpr -o landscape ' + process.cwd() + "/" + "printfile.txt";
+            exec( commandstring , function(error, stdout, stderr) {
+              console.log('stdout: ' + stdout);
+              console.log('stderr: ' + stderr);
+              if (error !== null) {
+                console.log('exec error: ' + error);
+              }
+            });
             myJSON = rows;
             res.send(myJSON);
           }
