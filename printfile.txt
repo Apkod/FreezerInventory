@@ -1,0 +1,6 @@
+*	FreezerInventory
+ID:     6
+Type:   Vegetables
+Added:  2019-12-15
+Desc.:  Spenaten
+Best before:   2020-12-15
