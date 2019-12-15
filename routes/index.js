@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var path = require('path');
 var fs = require("fs");
-var file = process.cwd() + "/" + "test.db";
+var file = process.cwd() + "/" + "myfreeze.db";
 var sqlite3 = require("sqlite3").verbose();
 var exec = require('child_process').exec;
 
@@ -89,7 +89,7 @@ router.get('/inventoryitems', function(req,res){
 
 router.put('/inventoryitems', function(req,res){
   var fs = require("fs");
-  var file = process.cwd() + "/" + "test.db";
+  var file = process.cwd() + "/" + "myfreeze.db";
   var exists = fs.existsSync(file);
 
   console.log(req.body);
@@ -174,7 +174,7 @@ router.put('/inventoryitems', function(req,res){
           }
           else{
             // print out the label from file printfile.txt in current folder
-            var commandstring = 'lpr -o landscape ' + process.cwd() + "/" + "printfile.txt";
+            var commandstring = 'lp -d DYMO_LabelWriter -o Media=w118h252 -o landscape -o fit-to-page ' + process.cwd() + "/" + "printfile.txt";
             exec( commandstring , function(error, stdout, stderr) {
               console.log('stdout: ' + stdout);
               console.log('stderr: ' + stderr);
