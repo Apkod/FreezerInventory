@@ -174,7 +174,8 @@ router.put('/inventoryitems', function(req,res){
           }
           else{
             // print out the label from file printfile.txt in current folder
-            var commandstring = 'lp -d DYMO_LabelWriter -o Media=w118h252 -o landscape -o fit-to-page ' + process.cwd() + "/" + "printfile.txt";
+            var commandstring = "lp -d DYMO_LabelWriter_450 -o Media=w118h252 -o landscape -o fit-to-page " + process.cwd() + "/" + "printfile.txt";
+            
             exec( commandstring , function(error, stdout, stderr) {
               console.log('stdout: ' + stdout);
               console.log('stderr: ' + stderr);
